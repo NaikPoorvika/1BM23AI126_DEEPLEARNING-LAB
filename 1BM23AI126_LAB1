@@ -1,0 +1,72 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def linear(x):
+    return x
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def tanh(x):
+    return np.tanh(x)
+
+def relu(x):
+    return np.maximum(0, x)
+
+def softmax(z):
+    e_z = np.exp(z - np.max(z)) 
+    return e_z / e_z.sum()
+
+class SimplePerceptron:
+    def __init__(self, activation='linear'):
+        self.weight = np.random.randn()
+        self.bias = np.random.randn()
+
+        if activation == 'linear':
+            self.activation = linear
+        elif activation == 'sigmoid':
+            self.activation = sigmoid
+        elif activation == 'tanh':
+            self.activation = tanh
+        elif activation == 'relu':
+            self.activation = relu
+        elif activation == 'softmax':
+            self.activation = softmax
+        else:
+            raise ValueError("Unsupported activation function")
+
+    def forward(self, x):
+        z = self.weight * x + self.bias
+        if self.activation == softmax:
+        
+            vec = np.array([z, 2*z, 3*z])
+            return self.activation(vec)
+        else:
+            return self.activation(z)
+
+def plot_perceptron():
+    x_values = np.linspace(-10, 10, 400)
+
+    activations = ['linear', 'sigmoid', 'tanh', 'relu', 'softmax']
+    plt.figure(figsize=(12, 7))
+
+    for func_name in activations:
+        perceptron = SimplePerceptron(activation=func_name)
+        if func_name == 'softmax':
+    
+            probs = np.array([perceptron.forward(x) for x in x_values])
+            for i in range(probs.shape[1]):
+                plt.plot(x_values, probs[:, i], label=f'softmax class {i}')
+        else:
+            y_values = [perceptron.forward(x) for x in x_values]
+            plt.plot(x_values, y_values, label=f'{func_name} activation')
+
+    plt.title('Perceptron Output with Different Activation Functions')
+    plt.xlabel('Input x')
+    plt.ylabel('Output y / Probability')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+if __name__ == "__main__":
+    plot_perceptron()
