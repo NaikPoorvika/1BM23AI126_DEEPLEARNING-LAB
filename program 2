@@ -1,0 +1,54 @@
+import numpy as np
+
+class Perceptron:
+    def __init__(self, input_size, learning_rate=0.1, max_epochs=1000):
+        self.weights = np.zeros(input_size)
+        self.bias = 0.0
+        self.lr = learning_rate
+        self.max_epochs = max_epochs
+
+    def activation(self, x):
+        return 1 if x >= 0 else -1
+
+    def predict(self, x):
+        linear_output = np.dot(x, self.weights) + self.bias
+        return self.activation(linear_output)
+
+    def fit(self, X, y):
+        for epoch in range(self.max_epochs):
+            errors = 0
+            for xi, target in zip(X, y):
+                pred = self.predict(xi)
+                update = self.lr * (target - pred)
+                if update != 0:
+                    self.weights += update * xi
+                    self.bias += update
+                    errors += 1
+            print(f"Epoch {epoch+1}/{self.max_epochs}, Misclassifications: {errors}")
+            if errors == 0:
+                print("Training complete: no misclassifications.")
+                break
+        else:
+            print("Reached maximum epochs.")
+
+    def evaluate(self, X, y):
+        predictions = np.array([self.predict(xi) for xi in X])
+        accuracy = np.mean(predictions == y)
+        print(f"Accuracy: {accuracy*100:.2f}%")
+        return accuracy
+
+if __name__ == "__main__":
+    X = np.array([
+        [0, 0],
+        [0, 1],
+        [1, 0],
+        [1, 1]
+    ])
+
+    y = np.array([-1, 1, 1, 1])
+
+    perceptron = Perceptron(input_size=2, learning_rate=0.1, max_epochs=20)
+    perceptron.fit(X, y)
+    perceptron.evaluate(X, y)
+
+plt.show()
